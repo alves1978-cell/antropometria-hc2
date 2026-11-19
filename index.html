@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#0C326F">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Antropometria HC II">
+  <title>Antropometria HC II — Nutrição Clínica</title>
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" type="image/svg+xml" href="./icons/icon.svg">
+  <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="./styles.css">
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body>
+
+  <!-- ======================== TELA DE LOGIN INSTITUCIONAL ======================== -->
+  <section id="login-screen" class="login-screen">
+    <div class="login-card">
+      <img class="login-logo" src="./icons/icon-192.png" alt="Ícone Antropometria HC II">
+      <p class="login-kicker">INCA · Hospital do Câncer II</p>
+      <h1>Antropometria HC II</h1>
+      <p class="login-sub">Avaliação nutricional, acompanhamento antropométrico e painel executivo — v2 PWA.</p>
+
+      <div class="login-lgpd">
+        <b>Acesso restrito &amp; LGPD:</b> apenas contas Google autorizadas na aba <code>USUARIOS</code> da planilha oficial (perfis <b>Editor</b> ou <b>Leitor / Consulta</b>) podem acessar os registros.
+      </div>
+
+      <div id="gis-button" class="login-gis-wrap"></div>
+
+      <div id="login-config-note" class="a-banner info hide" style="text-align:left;font-size:12px">
+        API ainda não conectada em <code>config.js</code>. Enquanto configura a publicação no Google, você já pode testar todas as telas abaixo em <b>Modo Demonstração</b> (dados fictícios):
+      </div>
+
+      <div id="login-demo-block">
+        <div class="login-divider"><span>Modo Demonstração (dados fictícios)</span></div>
+        <div class="login-demo-row">
+          <button id="btn-demo-editor" class="a-btn primary sm" type="button">Testar como Editor</button>
+          <button id="btn-demo-leitor" class="a-btn teal sm" type="button">Testar Consulta</button>
+        </div>
+      </div>
+
+      <div id="login-err" class="a-banner crit login-err hide"></div>
+      <p class="login-foot">Nutrição Clínica · HC II · PWA instalável para Android, iOS e Desktop</p>
+    </div>
+  </section>
+
+  <!-- ======================== SHELL PRINCIPAL DO APP ======================== -->
+  <div id="app-shell" class="hide">
+    <header class="a-top">
+      <img class="a-top-icon" src="./icons/icon-192.png" alt="HC II">
+      <div class="a-brand">
+        <b>Antropometria HC II</b>
+        <span id="a-who">conectando…</span>
+      </div>
+      <span class="a-role hide" id="a-role"></span>
+      <button class="a-iconbtn" id="a-export" type="button" aria-label="Exportar relatórios" title="Exportar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>
+      </button>
+      <button class="a-iconbtn" id="a-refresh" type="button" aria-label="Atualizar dados" title="Atualizar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg>
+      </button>
+      <button class="a-iconbtn" id="a-logout" type="button" aria-label="Sair" title="Sair / trocar conta">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      </button>
+    </header>
+
+    <div id="install-bar" class="install-bar hide">
+      <span>Instale o <b>Antropometria HC II</b> na tela inicial para acesso rápido sem navegador.</span>
+      <button id="btn-install-pwa" class="a-btn primary sm" type="button">Instalar</button>
+      <button id="btn-dismiss-install" class="a-btn ghost sm" type="button">Agora não</button>
+    </div>
+
+    <nav class="a-nav" id="a-nav" aria-label="Navegação principal">
+      <button type="button" data-tab="hoje" class="active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
+        <span>Hoje</span>
+        <span class="badge" id="a-badge"></span>
+      </button>
+      <button type="button" data-tab="avaliar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>
+        <span>Avaliar</span>
+      </button>
+      <button type="button" data-tab="pac">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        <span>Pacientes</span>
+      </button>
+      <button type="button" data-tab="hist">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v4l3 2"/><path d="M3.05 11a9 9 0 1 1 .5 4"/><path d="M3 4v7h7"/></svg>
+        <span>Histórico</span>
+      </button>
+      <button type="button" data-tab="painel">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-5 4 3 5-7"/></svg>
+        <span>Painel</span>
+      </button>
+    </nav>
+
+    <!-- ======================== HOJE ======================== -->
+    <main class="a-view active" id="v-hoje">
+      <div id="readonly-banner" class="a-banner info hide">Modo <b>Somente Consulta</b> ativo — visualização, Painel, cópia de evolução (PEP) e relatórios liberados; cadastros e edições bloqueados.</div>
+      <h1 class="a-h">Reavaliações</h1>
+      <p class="a-sub" id="hoje-sub">Fila clínica conforme o ciclo de reavaliação da planilha.</p>
+      <div id="cap-banner"></div>
+      <div class="a-tiles" id="hoje-tiles"></div>
+      <div class="hoje-controls">
+        <input class="f-in" id="hoje-q" type="search" placeholder="Buscar matrícula, iniciais ou leito" autocomplete="off">
+        <select class="f-in" id="hoje-sort" aria-label="Ordenar fila">
+          <option value="prio">Ordenar: Prioridade / Atraso</option>
+          <option value="leito">Ordenar: Leito (ronda)</option>
+          <option value="grav">Ordenar: Gravidade ponderal</option>
+        </select>
+      </div>
+      <div class="a-filters" id="hoje-filters"></div>
+      <div id="hoje-list"></div>
+    </main>
+
+    <!-- ======================== AVALIAR ======================== -->
+    <main class="a-view" id="v-avaliar">
+      <div id="edit-banner"></div>
+      <h1 class="a-h" id="av-title">Nova avaliação</h1>
+      <p class="a-sub" id="av-sub">Digite a matrícula: os dados do paciente e da última avaliação são preenchidos automaticamente.</p>
+
+      <div class="a-card">
+        <h3>Paciente</h3>
+        <div class="f-field">
+          <label for="f-mat">Matrícula</label>
+          <div class="a-row">
+            <input class="f-in a-grow" id="f-mat" type="text" inputmode="numeric" autocomplete="off" placeholder="ex.: 5242148" list="dl-pac">
+            <button class="a-btn" type="button" id="btn-buscar">Buscar</button>
+          </div>
+          <datalist id="dl-pac"></datalist>
+        </div>
+        <div id="pac-card"></div>
+      </div>
+
+      <div class="a-card">
+        <h3>Data</h3>
+        <div class="f-field" style="margin:0">
+          <label for="f-data">Data da avaliação</label>
+          <input class="f-in" id="f-data" type="date">
+        </div>
+      </div>
+
+      <div class="a-card">
+        <h3>Peso e estatura</h3>
+        <div class="f-grid">
+          <div class="f-field">
+            <label for="f-peso">Peso aferido</label>
+            <div class="f-unit"><input class="f-in" id="f-peso" data-k="peso" type="text" inputmode="decimal" placeholder="0,0"><span class="u">kg</span></div>
+          </div>
+          <div class="f-field">
+            <label for="f-pesoUsual">Peso usual</label>
+            <div class="f-unit"><input class="f-in" id="f-pesoUsual" data-k="pesoUsual" type="text" inputmode="decimal" placeholder="0,0"><span class="u">kg</span></div>
+          </div>
+          <div class="f-field">
+            <label for="f-estatura">Estatura</label>
+            <div class="f-unit"><input class="f-in" id="f-estatura" data-k="estatura" type="text" inputmode="decimal" placeholder="1,60"><span class="u">m</span></div>
+          </div>
+          <div class="f-field">
+            <label for="f-joelho">Altura do joelho</label>
+            <div class="f-unit"><input class="f-in" id="f-joelho" data-k="joelho" type="text" inputmode="decimal" placeholder="0"><span class="u">cm</span></div>
+          </div>
+        </div>
+        <div class="f-field" style="margin-bottom:0">
+          <label for="f-pesoRef">Peso referido <span class="hint">se não foi possível pesar</span></label>
+          <div class="f-unit"><input class="f-in" id="f-pesoRef" data-k="pesoRef" type="text" inputmode="decimal" placeholder="0,0"><span class="u">kg</span></div>
+        </div>
+        <div id="inline-warnings"></div>
+      </div>
+
+      <div class="a-card">
+        <h3>Edema e ascite</h3>
+        <div class="f-field">
+          <span class="f-lab">Grau de edema <span class="hint" id="hint-edema"></span></span>
+          <div class="seg" id="seg-edema"></div>
+        </div>
+        <div class="f-field" style="margin-bottom:0">
+          <span class="f-lab">Grau de ascite <span class="hint" id="hint-ascite"></span></span>
+          <div class="seg" id="seg-ascite"></div>
+        </div>
+      </div>
+
+      <div class="a-card">
+        <h3>Perda de peso</h3>
+        <div class="f-field" style="margin-bottom:0">
+          <label for="f-tempoPerda">Tempo da perda <span class="hint">em dias — usado com o peso usual</span></label>
+          <div class="f-unit"><input class="f-in" id="f-tempoPerda" data-k="tempoPerda" type="text" inputmode="numeric" placeholder="0"><span class="u">dias</span></div>
+          <div class="f-quick" id="q-tempo"></div>
+        </div>
+      </div>
+
+      <div class="a-card">
+        <h3>
+          <span>Braço, panturrilha e força</span>
+          <span id="badge-fpp-rec" class="a-chip teal hide">Recomendado p/ idosos</span>
+        </h3>
+        <div class="f-grid g3">
+          <div class="f-field">
+            <label for="f-cb">CB</label>
+            <div class="f-unit"><input class="f-in" id="f-cb" data-k="cb" type="text" inputmode="decimal" placeholder="0,0"><span class="u">cm</span></div>
+          </div>
+          <div class="f-field">
+            <label for="f-pct">PCT</label>
+            <div class="f-unit"><input class="f-in" id="f-pct" data-k="pct" type="text" inputmode="decimal" placeholder="0,0"><span class="u">mm</span></div>
+          </div>
+          <div class="f-field">
+            <label for="f-cp">CP</label>
+            <div class="f-unit"><input class="f-in" id="f-cp" data-k="cp" type="text" inputmode="decimal" placeholder="0,0"><span class="u">cm</span></div>
+          </div>
+        </div>
+        <p class="a-small a-muted" id="cmb-live" style="margin:-4px 0 12px"></p>
+        <div class="f-field" style="margin-bottom:0">
+          <label for="f-fpp">Força de preensão (FPP)</label>
+          <div class="f-unit"><input class="f-in" id="f-fpp" data-k="fpp" type="text" inputmode="decimal" placeholder="0,0"><span class="u">kgf</span></div>
+        </div>
+      </div>
+
+      <div class="a-card">
+        <h3>
+          <span>SARC-F</span>
+          <span id="badge-sf-rec" class="a-chip teal hide">Recomendado p/ rastreio (≥60)</span>
+        </h3>
+        <div class="f-switch">
+          <label for="tog-sf">Aplicar o questionário SARC-F</label>
+          <button type="button" class="tog" id="tog-sf" role="switch" aria-checked="false"></button>
+        </div>
+        <div id="sf-box" class="hide"></div>
+      </div>
+
+      <div class="a-card">
+        <h3>Observações</h3>
+        <textarea class="f-in" id="f-obs" maxlength="500" placeholder="Opcional — evite dados que identifiquem o paciente (LGPD)"></textarea>
+      </div>
+
+      <div class="a-savebar">
+        <div class="pvmini" id="pv-mini"><b>—</b><span>Informe peso e estatura</span></div>
+        <button class="a-btn ghost hide" type="button" id="btn-cancel-edit">Cancelar</button>
+        <button class="a-btn primary" type="button" id="btn-save-aval">Salvar</button>
+      </div>
+    </main>
+
+    <!-- ======================== PACIENTES ======================== -->
+    <main class="a-view" id="v-pac">
+      <div class="a-row" style="margin-bottom:8px">
+        <h1 class="a-h a-grow">Pacientes</h1>
+        <button class="a-btn primary sm" type="button" id="btn-novo-pac">+ Novo</button>
+      </div>
+      <div class="a-search">
+        <input class="f-in" id="pac-q" type="search" placeholder="Buscar matrícula, iniciais ou leito" autocomplete="off">
+      </div>
+      <div class="a-filters" id="pac-filters"></div>
+      <div id="pac-list"></div>
+    </main>
+
+    <!-- ======================== HISTÓRICO ======================== -->
+    <main class="a-view" id="v-hist">
+      <h1 class="a-h">Histórico de avaliações</h1>
+      <p class="a-sub">Toque numa avaliação para ver o resultado oficial, copiar evolução p/ prontuário (PEP), editar ou excluir.</p>
+      <div class="a-search">
+        <input class="f-in" id="hist-q" type="search" inputmode="numeric" placeholder="Filtrar por matrícula" autocomplete="off">
+      </div>
+      <div id="hist-list"></div>
+    </main>
+
+    <!-- ======================== PAINEL ======================== -->
+    <main class="a-view" id="v-painel">
+      <div id="painel-load"></div>
+      <div id="painel-body" class="hide">
+        <div class="wrap">
+          <header class="top">
+            <div>
+              <p class="top-eyebrow">INCA · Hospital do Câncer II · Nutrição Clínica</p>
+              <h1>Painel Nutricional — HC II</h1>
+              <p class="sub">Diagnóstico antropométrico interativo. Os filtros recalculam todos os indicadores, gráficos e relatórios PDF.</p>
+            </div>
+            <div class="top-meta">
+              <span class="pill" id="dash-base">Base: —</span><br>
+              <span id="dash-gerado">—</span>
+            </div>
+          </header>
+
+          <section id="sec-filters">
+            <div class="card filterbar">
+              <div class="filter-row">
+                <div class="filter-group" style="flex:1;min-width:260px">
+                  <span class="filter-label">Período</span>
+                  <div class="chip-group" id="filter-preset"></div>
+                </div>
+                <div class="filter-group">
+                  <span class="filter-label">Intervalo personalizado</span>
+                  <div class="date-custom">
+                    <input type="date" id="date-start"> <span>–</span> <input type="date" id="date-end">
+                  </div>
+                </div>
+                <button class="btn-reset" id="btn-reset" type="button">Limpar filtros</button>
+              </div>
+              <div class="filter-row">
+                <div class="filter-group">
+                  <span class="filter-label">Setor / clínica <span class="f-tag hide" id="tag-filter-setor"></span></span>
+                  <div class="chip-group" id="filter-setor"></div>
+                </div>
+                <div class="filter-group">
+                  <span class="filter-label">Sexo <span class="f-tag hide" id="tag-filter-sexo"></span></span>
+                  <div class="chip-group" id="filter-sexo"></div>
+                </div>
+                <div class="filter-group">
+                  <span class="filter-label">Faixa etária <span class="f-tag hide" id="tag-filter-faixa"></span></span>
+                  <div class="chip-group" id="filter-faixa"></div>
+                </div>
+                <div class="filter-group">
+                  <span class="filter-label">Tipo <span class="f-tag hide" id="tag-filter-tipo"></span></span>
+                  <div class="chip-group" id="filter-tipo"></div>
+                </div>
+              </div>
+              <div class="filter-status">
+                <span id="filter-status-text">—</span>
+                <div class="unit-toggle" role="group" aria-label="Unidade de análise">
+                  <button type="button" id="btn-unit-all" class="active">Todas as avaliações</button>
+                  <button type="button" id="btn-unit-latest">1 por paciente (última)</button>
+                </div>
+              </div>
+            </div>
+            <div class="empty-banner" id="empty-banner">Nenhuma avaliação corresponde aos filtros selecionados. Ajuste os filtros acima.</div>
+          </section>
+
+          <section id="sec-kpi">
+            <div class="section-head">
+              <div>
+                <p class="section-kicker">Principais indicadores</p>
+                <h2>Panorama da amostra filtrada</h2>
+              </div>
+              <p class="section-note">Nos períodos fechados (7d, 30d, mês), exibe Δ frente ao período anterior.</p>
+            </div>
+            <div class="kpi-grid" id="kpi-grid"></div>
+            <div class="kpi-strip" id="kpi-strip" style="margin-top:12px"></div>
+          </section>
+
+          <section id="sec-matrix">
+            <div class="section-head">
+              <div>
+                <p class="section-kicker">Cruzamento clínico · IMC × Massa Muscular</p>
+                <h2>Matriz de Obesidade Sarcopênica</h2>
+              </div>
+              <p class="section-note">Identifica pacientes com excesso de peso mas com depleção muscular por CB ou CP.</p>
+            </div>
+            <div class="matrix-grid" id="sarc-matrix"></div>
+          </section>
+
+          <section id="sec-imc">
+            <div class="section-head">
+              <div>
+                <p class="section-kicker">Distribuição</p>
+                <h2>Diagnóstico nutricional pelo IMC</h2>
+              </div>
+              <p class="section-note">Lipschitz aplicado a idosos (≥60 anos); demais faixas pela OMS.</p>
+            </div>
+            <div class="card" style="padding:18px 20px 14px">
+              <div class="legend">
+                <span class="item"><span class="sw" style="background:var(--def2)"></span>Déficit de peso</span>
+                <span class="item"><span class="sw" style="background:var(--good)"></span>Eutrofia</span>
+                <span class="item"><span class="sw" style="background:var(--exc2)"></span>Excesso de peso</span>
+              </div>
+              <div class="diverge" id="imc-diverge"></div>
+              <div class="div-axis-labels"><span>&larr; magreza / baixo peso</span><span>sobrepeso / obesidade &rarr;</span></div>
+            </div>
+          </section>
+
+          <section id="sec-trend">
+            <div class="section-head">
+              <div>
+                <p class="section-kicker">Série temporal</p>
+                <h2>Tendência no período selecionado</h2>
+              </div>
+              <p class="section-note">Agregado por semana (segunda-feira). Linhas tracejadas / pontos vazados indicam semana com n &lt; 5.</p>
+            </div>
+            <div class="trend-grid">
+              <div class="card">
+                <p class="chart-title">Excesso de peso vs. depleção muscular (CB)</p>
+                <p class="chart-sub">% por semana de avaliação (toque ou passe o mouse para detalhes)</p>
+                <svg class="chart" id="chart-lines" viewBox="0 0 620 230"></svg>
+                <div class="legend" id="legend-lines" style="margin-top:4px"></div>
+              </div>
+              <div class="card">
+                <p class="chart-title">Volume de avaliações</p>
+                <p class="chart-sub">Nº de registros por semana</p>
+                <svg class="chart" id="chart-bars" viewBox="0 0 460 230"></svg>
+              </div>
+              <div class="card full">
+                <p class="chart-title">IMC médio da amostra</p>
+                <p class="chart-sub">Média semanal (kg/m²) · linha de referência em 25 kg/m²</p>
+                <svg class="chart" id="chart-imc" viewBox="0 0 1160 150"></svg>
+              </div>
+            </div>
+          </section>
+
+          <section id="sec-rank-ind">
+            <div class="section-head">
+              <div>
+                <p class="section-kicker">Ranking · prevalência</p>
+                <h2>Indicadores antropométricos de depleção</h2>
+              </div>
+              <p class="section-note">% classificada em risco na amostra filtrada.</p>
+            </div>
+            <div class="card" style="padding:18px 20px 12px">
+              <div class="legend">
+                <span class="item"><span class="sw" style="background:var(--critical)"></span>Crítico (&ge;50%)</span>
+                <span class="item"><span class="sw" style="background:var(--warning)"></span>Atenção (25–50%)</span>
+                <span class="item"><span class="sw" style="background:var(--good)"></span>Baixa prevalência (&lt;25%)</span>
+              </div>
+              <div id="rank-indicadores"></div>
+              <p class="section-note" style="text-align:left;margin-top:8px">* indicador pouco medido nesta seleção (base &lt; 15) — leia com cautela.</p>
+            </div>
+          </section>
+
+          <section id="sec-rank-setor">
+            <div class="section-head">
+              <div>
+                <p class="section-kicker">Ranking · por setor / clínica</p>
+                <h2>Volume, risco nutricional e aderência ao ciclo 10d</h2>
+              </div>
+              <p class="section-note">Setor padronizado nas 5 categorias oficiais do HC II.</p>
+            </div>
+            <div class="sector-grid" id="sector-grid"></div>
+          </section>
+
+          <section id="sec-summary">
+            <div class="summary">
+              <h2><span class="dot"></span>Resumo executivo</h2>
+              <div id="summary-body"></div>
+            </div>
+          </section>
+
+          <footer>
+            <p><span class="src">Metodologia:</span> classificações oficiais calculadas pela planilha (aba AVALIAÇÕES). O seletor "1 por paciente" considera a avaliação mais recente de cada paciente no período filtrado. <span id="dash-footbase"></span></p>
+            <p><span class="src">LGPD &amp; Qualidade:</span> o Painel exibe apenas indicadores agregados. Avaliações de FPP e SARC-F com base pequena aparecem sinalizadas com asterisco (*).</p>
+          </footer>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div id="toasts" aria-live="polite"></div>
+  <div id="tooltip"></div>
+
+  <script src="./config.js"></script>
+  <script src="./api.js"></script>
+  <script src="./dashboard.js"></script>
+  <script src="./report.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>

@@ -1,0 +1,30 @@
+{
+  "name": "Antropometria HC II — Nutrição Clínica",
+  "short_name": "Antropometria HC II",
+  "description": "Avaliação nutricional, acompanhamento antropométrico e painel clínico hospitalar — HC II.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0C326F",
+  "theme_color": "#0C326F",
+  "lang": "pt-BR",
+  "icons": [
+    {
+      "src": "./icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "./icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "./icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
