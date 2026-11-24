@@ -1201,7 +1201,7 @@ window.App = (function () {
         S.dash = data;
         qs('#painel-load').classList.add('hide');
         qs('#painel-body').classList.remove('hide');
-        window.Dash.load(data, S.alertas ? S.alertas.itens : []);
+        window.Dash.load(data, S.alertas ? S.alertas.itens : [], S.pacientes || []);
       })
       .catch((err) => replaceSafe(qs('#painel-load'), el('div', { class: 'a-banner crit', style: 'margin:16px', text: err.message })));
   }
@@ -1291,7 +1291,7 @@ window.App = (function () {
     optPdf.addEventListener('click', () => {
       m.close();
       toast('Montando Relatório Executivo (PDF)…', '', 12000);
-      const ready = S.dash ? Promise.resolve() : Api.call('api_dashboard').then((d) => { S.dash = d; window.Dash.load(d, S.alertas ? S.alertas.itens : []); });
+      const ready = S.dash ? Promise.resolve() : Api.call('api_dashboard').then((d) => { S.dash = d; window.Dash.load(d, S.alertas ? S.alertas.itens : [], S.pacientes || []); });
       ready
         .then(() => window.Report.buildPanelPdf({ user: S.init && S.init.user ? S.init.user.email : '' }))
         .then((res) => {

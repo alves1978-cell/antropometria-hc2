@@ -39,6 +39,7 @@ window.Dash = (function () {
 
   let ROWS = [];
   let ALERTAS_ITEMS = [];
+  let PACIENTES_LIST = [];
   let PRESETS = [];
   let DASH_RANGE = { start: '0000-01-01', end: '9999-12-31' };
   let LAST_META = { hoje: '', geradoEm: '', pacientes: 0 };
@@ -48,6 +49,7 @@ window.Dash = (function () {
     dateEnd: '9999-12-31',
     preset: 'all',
     unitMode: 'all', // 'all' | 'latest' (1 por paciente)
+    subtab: 'geral', // 'geral' | 'evolucao' | 'sarcopenia' | 'qualidade' | 'comparador'
     setores: new Set(SECTORS),
     sexos: new Set(['F', 'M']),
     faixas: new Set(['adulto', 'idoso', 'menor20']),
@@ -937,11 +939,41 @@ window.Dash = (function () {
     renderRankIndicadores(rows);
     renderSectors(rows);
     renderSummary(rows);
+    renderActiveSubpanel(rows);
+  }
+
+  function switchSubtab(tab) {
+    state.subtab = tab || 'geral';
+    document.querySelectorAll('#dash-subtabs button').forEach((b) => {
+      b.classList.toggle('active', b.dataset.subtab === state.subtab);
+    });
+    ['geral', 'evolucao', 'sarcopenia', 'qualidade', 'comparador'].forEach((k) => {
+      const el = document.getElementById('subpanel-' + k);
+      if (el) el.classList.toggle('hide', k !== state.subtab);
+    });
+    if (ROWS.length) renderActiveSubpanel(filteredRows());
+  }
+
+  function renderActiveSubpanel(rows) {
+    if (state.subtab === 'geral' || !window.PanelsExtra) return;
+    const allFilteredRows = applyFiltersToRange(state.dateStart, state.dateEnd, 'all');
+    window.PanelsExtra.render(state.subtab, {
+      rows,
+      allFilteredRows,
+      rawRows: ROWS,
+      alertas: ALERTAS_ITEMS,
+      pacientes: PACIENTES_LIST,
+      snap: getSnapshot()
+    });
   }
 
   function bindEventsOnce() {
     if (bindEventsOnce._done) return;
     bindEventsOnce._done = true;
+
+    document.querySelectorAll('#dash-subtabs button').forEach((b) => {
+      b.addEventListener('click', () => switchSubtab(b.dataset.subtab));
+    });
 
     document.getElementById('date-start').addEventListener('change', (ev) => {
       state.dateStart = ev.target.value;
@@ -979,10 +1011,11 @@ window.Dash = (function () {
     });
   }
 
-  function load(data, alertasItems) {
+  function load(data, alertasItems, pacientesList) {
     bindEventsOnce();
     ROWS = data.rows || [];
     ALERTAS_ITEMS = alertasItems || ALERTAS_ITEMS || [];
+    PACIENTES_LIST = pacientesList || PACIENTES_LIST || [];
     LAST_META = { hoje: data.hoje, geradoEm: data.geradoEm, pacientes: data.pacientes };
 
     const hoje = data.hoje;
@@ -1032,7 +1065,15 @@ window.Dash = (function () {
 
   function setAlertas(items) {
     ALERTAS_ITEMS = items || [];
-    if (ROWS.length) renderSectors(filteredRows());
+    if (ROWS.length) {
+      renderSectors(filteredRows());
+      renderActiveSubpanel(filteredRows());
+    }
+  }
+
+  function setPacientes(list) {
+    PACIENTES_LIST = list || [];
+    if (ROWS.length) renderActiveSubpanel(filteredRows());
   }
 
   function getSnapshot() {
@@ -1061,5 +1102,5 @@ window.Dash = (function () {
     };
   }
 
-  return { load, setAlertas, getSnapshot, fmt1, fmt0, pctOf, mean };
+  return { load, setAlertas, setPacientes, switchSubtab, getSnapshot, showTip, hideTip, fmt1, fmt0, pctOf, mean };
 })();

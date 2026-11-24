@@ -283,6 +283,14 @@
             </div>
           </header>
 
+          <div class="dash-subtabs" id="dash-subtabs" role="tablist" aria-label="Sub-painéis analíticos">
+            <button type="button" data-subtab="geral" class="active">Visão Geral</button>
+            <button type="button" data-subtab="evolucao">Evolução</button>
+            <button type="button" data-subtab="sarcopenia">Sarcopenia</button>
+            <button type="button" data-subtab="qualidade">Qualidade &amp; Ciclo</button>
+            <button type="button" data-subtab="comparador">Comparador</button>
+          </div>
+
           <section id="sec-filters">
             <div class="card filterbar">
               <div class="filter-row">
@@ -327,6 +335,7 @@
             <div class="empty-banner" id="empty-banner">Nenhuma avaliação corresponde aos filtros selecionados. Ajuste os filtros acima.</div>
           </section>
 
+          <div id="subpanel-geral">
           <section id="sec-kpi">
             <div class="section-head">
               <div>
@@ -433,6 +442,12 @@
               <div id="summary-body"></div>
             </div>
           </section>
+          </div>
+
+          <div id="subpanel-evolucao" class="hide"></div>
+          <div id="subpanel-sarcopenia" class="hide"></div>
+          <div id="subpanel-qualidade" class="hide"></div>
+          <div id="subpanel-comparador" class="hide"></div>
 
           <footer>
             <p><span class="src">Metodologia:</span> classificações oficiais calculadas pela planilha (aba AVALIAÇÕES). O seletor "1 por paciente" considera a avaliação mais recente de cada paciente no período filtrado. <span id="dash-footbase"></span></p>
@@ -449,6 +464,7 @@
   <script src="./config.js"></script>
   <script src="./api.js"></script>
   <script src="./dashboard.js"></script>
+  <script src="./panels_extra.js"></script>
   <script src="./report.js"></script>
   <script src="./app.js"></script>
 </body>

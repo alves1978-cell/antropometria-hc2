@@ -65,7 +65,8 @@ Leia o README.md e os arquivos do repositório acima para pegar o contexto compl
 | `config.js` | Configuração pública de conexão (`GAS_API_URL`, `OAUTH_CLIENT_ID`, `ALLOW_DEMO: false`, `APP_VERSION`). |
 | `api.js` | Autenticação via Google Identity Services (GIS), envio CORS-safe (`text/plain`), renovação de sessão e base de demonstração opcional. |
 | `app.js` | Lógica das abas `Hoje`, `Avaliar`, `Pacientes`, `Histórico`, modais, prévia ao vivo (`IMC`, `%PP`, `Chumlea`, `SARC-F`), gráfico sparkline de evolução ponderal, cópia de evolução para prontuário (`PEP`) e modal `Exportar`. |
-| `dashboard.js` | `Painel Nutricional — HC II` com alternância *Todas as avaliações* vs. *1 por paciente (última)*, filtros neutros/ativos, comparativo com período anterior (`▲/▼`), **Matriz 2×2 de Obesidade Sarcopênica**, gráficos SVG semanais com alerta `n < 5` e aderência ao ciclo de 10 dias por setor. |
+| `dashboard.js` | `Painel Nutricional — HC II` (sub-aba `Visão Geral` + controle das 5 sub-abas e filtros globais) com alternância *Todas as avaliações* vs. *1 por paciente*, comparativo `▲/▼`, **Matriz 2×2 de Obesidade Sarcopênica**, gráficos SVG semanais (`n < 5`) e aderência ao ciclo 10d por setor. |
+| `panels_extra.js` | 4 sub-painéis interativos avançados do `Painel`: **Evolução na Internação** (scatter permanência × peso + matriz 3×3 IMC + faixas de permanência), **Sarcopenia (EWGSOP2)** (funil + meta interativa por setor), **Qualidade & Ciclo** (48h, ciclo 10d, completude e demanda semanal) e **Comparador Lado a Lado** (Setor, Faixa, Sexo, Tipo, Período). |
 | `report.js` | Geração client-side de **PDF Executivo INCA/MS** (via `jsPDF`), **PDF Passagem de Plantão / Risco** (Setor → Leito, LGPD) e **Resumo Atual de Internados (`.csv` UTF-8 BOM p/ Excel)**. |
 | `manifest.webmanifest` | Manifesto PWA (nome, tema `#0C326F`, ícones `192`, `512` e `maskable`). |
 | `sw.js` | Service Worker (*network-first* para o app shell com fallback offline; nunca faz cache de chamadas à API/Google). |
@@ -95,9 +96,13 @@ Leia o README.md e os arquivos do repositório acima para pegar o contexto compl
    * Detalhe do paciente com **mini gráfico SVG (sparkline)** de evolução ponderal e histórico de avaliações clicáveis.
    * Botão **"Copiar evolução (PEP)"** com 1 clique (texto técnico estruturado, LGPD, pronto para colar no prontuário eletrônico).
    * Cadastro padronizado nas 5 categorias oficiais de setor.
-4. **`Painel` & `Exportar`:**
-   * Alternância **Todas as avaliações** vs. **1 por paciente (última)** + **Matriz 2×2 de Obesidade Sarcopênica** (`IMC × CB/CP`) + comparativo `▲/▼` de período + aderência ao ciclo de 10 dias por setor.
-   * 4 exportações: **Relatório Executivo (PDF)**, **Passagem de Plantão (PDF)**, **Resumo de Internados (`.csv` p/ Excel)** e **Planilha Completa (`.xlsx`)**.
+4. **`Painel` (5 sub-abas interativas) & `Exportar`:**
+   * **Visão Geral:** alternância *Todas as avaliações* vs. *1 por paciente (última)*, **Matriz 2×2 de Obesidade Sarcopênica** (`IMC × CB/CP`), comparativo `▲/▼`, séries semanais (`n < 5`) e resumo executivo.
+   * **Evolução:** trajetória longitudinal `1ª → Última` avaliação, matriz de transição de IMC 3×3, gráfico interativo `Dias de internação × Variação ponderal (%)` e risco por faixa de permanência.
+   * **Sarcopenia (EWGSOP2):** funil de rastreio funcional, cobertura de SARC-F/FPP por setor com **seletor de meta (30% / 50% / 80%)** e estratificação de obesidade sarcopênica por faixa etária e sexo.
+   * **Qualidade & Ciclo:** taxa de 1ª avaliação em até 48h, aderência ao ciclo de 10 dias por setor, alertas de atraso >30d, ranking de completude de campos e demanda por dia da semana.
+   * **Comparador:** análise espelhada Lado A vs. Lado B + `Δ` (Setor × Setor, Idosos × Adultos, Feminino × Masculino, Inicial × Reavaliação, Últimos 30d × 30d anteriores).
+   * **4 exportações:** **Relatório Executivo (PDF)**, **Passagem de Plantão (PDF)**, **Resumo de Internados (`.csv` p/ Excel)** e **Planilha Completa (`.xlsx`)**.
 
 ---
 
@@ -133,3 +138,4 @@ Tudo é feito **diretamente na aba `USUARIOS` da Planilha Google** (não precisa
 | :--- | :--- | :--- |
 | 18/11/2026 | `v2.0.1` | Lançamento da v2 PWA no GitHub Pages: tema INCA/MS, ícone exclusivo `HC II`, login Google (em produção) com perfis `editor`/`leitor` via aba `USUARIOS`, API paralela no Apps Script (`api_batchInit`, `api_registrarAlta`), correção do modal de paciente + sparkline, prévia estendida em `Avaliar`, cópia PEP, Matriz 2×2 de Obesidade Sarcopênica, PDF Executivo com Δ, PDF Passagem de Plantão e CSV de Internados. |
 | 23/11/2026 | `docs` | Criação do `README.md` de retomada rápida com regra obrigatória de atualização contínua da documentação a cada nova versão do app. |
+| 23/11/2026 | `v2.1.0` | Adicionados 4 novos sub-painéis interativos na aba `Painel` (`panels_extra.js`): **Evolução na Internação** (trajetória longitudinal, scatter permanência × variação ponderal e matriz IMC 3×3), **Sarcopenia (EWGSOP2)** (funil + meta interativa 30/50/80%), **Qualidade & Ciclo** (48h, ciclo 10d, completude e demanda por dia da semana) e **Comparador Lado a Lado** (Setor, Faixa, Sexo, Tipo e Período). Atualizado `sw.js` para `v2.1.0`. |

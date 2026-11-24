@@ -15,5 +15,5 @@ window.HC2_CONFIG = {
   // Desativado em produção: exibe apenas o botão institucional "Entrar com Google"
   ALLOW_DEMO: false,
 
-  APP_VERSION: '2.0.0'
+  APP_VERSION: '2.1.0'
 };

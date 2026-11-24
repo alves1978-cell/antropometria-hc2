@@ -1,4 +1,4 @@
-const CACHE_NAME = 'hc2-antropo-v2.0.1';
+const CACHE_NAME = 'hc2-antropo-v2.1.0';
 const APP_SHELL = [
   './',
   './index.html',
@@ -6,6 +6,7 @@ const APP_SHELL = [
   './config.js',
   './api.js',
   './dashboard.js',
+  './panels_extra.js',
   './report.js',
   './app.js',
   './manifest.webmanifest',
