@@ -23,6 +23,7 @@ Vamos continuar o projeto "Antropometria HC II (v2 PWA)", um aplicativo web inst
   3. Toda requisição POST do frontend para o Apps Script DEVE usar `Content-Type: text/plain;charset=utf-8` (evita preflight CORS).
   4. Sempre que alterar arquivos estáticos do PWA, incrementar `CACHE_NAME` em `sw.js` para forçar atualização nos celulares.
   5. Manter a identidade visual INCA / Ministério da Saúde (#0C326F, #1351B4, #007A87) e os perfis `editor` e `leitor` (Somente Consulta).
+  6. REGRA OBRIGATÓRIA DE DOCUMENTAÇÃO: SEMPRE que atualizarmos o app (frontend PWA ou backend API), atualizar também este `README.md` (funcionalidades, arquivos e a seção "Histórico de versões") e publicar o `README.md` atualizado no GitHub junto com a entrega.
 
 Leia o README.md e os arquivos do repositório acima para pegar o contexto completo. Hoje quero trabalhar no seguinte: [DESCREVA AQUI O QUE DESEJA FAZER].
 ```
@@ -111,7 +112,8 @@ Tudo é feito **diretamente na aba `USUARIOS` da Planilha Google** (não precisa
 ### 2. Atualizar o Frontend (PWA) no GitHub Pages
 1. Edite ou envie os arquivos atualizados no repositório `alves1978-cell/antropometria-hc2` (branch `main`).
 2. **Importante:** sempre incremente `CACHE_NAME` em `sw.js` (ex.: `hc2-antropo-v2.0.2`) para que os celulares baixem a nova versão automaticamente.
-3. O GitHub Pages publica a atualização em ~1 minuto.
+3. **Obrigatório:** atualize também este `README.md` (refletindo a mudança e adicionando uma linha no *Histórico de versões* abaixo) e publique-o junto no GitHub.
+4. O GitHub Pages publica a atualização em ~1 minuto.
 
 ### 3. Atualizar a API (Google Apps Script)
 1. Abra o projeto **`Antropometria HC II - API v2`** em `script.google.com`.
@@ -122,3 +124,12 @@ Tudo é feito **diretamente na aba `USUARIOS` da Planilha Google** (não precisa
 ### 4. Instalar o App no Celular
 * **iPhone (Safari):** abrir `https://alves1978-cell.github.io/antropometria-hc2/` → **Compartilhar** → **Adicionar à Tela de Início**.
 * **Android (Chrome):** abrir o link → tocar em **"Instalar"** *(ou `⋮` → Adicionar à tela inicial)*.
+
+---
+
+## Histórico de versões
+
+| Data | Versão | Alterações |
+| :--- | :--- | :--- |
+| 18/11/2026 | `v2.0.1` | Lançamento da v2 PWA no GitHub Pages: tema INCA/MS, ícone exclusivo `HC II`, login Google (em produção) com perfis `editor`/`leitor` via aba `USUARIOS`, API paralela no Apps Script (`api_batchInit`, `api_registrarAlta`), correção do modal de paciente + sparkline, prévia estendida em `Avaliar`, cópia PEP, Matriz 2×2 de Obesidade Sarcopênica, PDF Executivo com Δ, PDF Passagem de Plantão e CSV de Internados. |
+| 23/11/2026 | `docs` | Criação do `README.md` de retomada rápida com regra obrigatória de atualização contínua da documentação a cada nova versão do app. |
